@@ -14,9 +14,11 @@ class NotebookArchiver:
     CONFIG_DIR = Path(".config")
     CONFIG_DIR.mkdir(exist_ok=True, parents=True)
     DEFAULT_PATH_FILE = CONFIG_DIR / "default_notebook_path.txt"
+    DEFAULT_PROTO_PATH_FILE = CONFIG_DIR / "default_proto_path.txt"
     
     def __init__(self):
         self.default_path = self._load_default_path()
+        self.default_proto_path = self._load_default_proto_path()
 
     def _load_default_path(self):
         """加载默认路径"""
@@ -30,6 +32,19 @@ class NotebookArchiver:
         with open(self.DEFAULT_PATH_FILE, 'w', encoding='utf-8') as f:
             f.write(str(path))
         self.default_path = path
+
+    def _load_default_proto_path(self):
+        """加载默认proto路径"""
+        if self.DEFAULT_PROTO_PATH_FILE.exists():
+            with open(self.DEFAULT_PROTO_PATH_FILE, 'r', encoding='utf-8') as f:
+                return Path(f.read().strip())
+        return Path("src/proto")
+
+    def _save_default_proto_path(self, path):
+        """保存默认proto路径"""
+        with open(self.DEFAULT_PROTO_PATH_FILE, 'w', encoding='utf-8') as f:
+            f.write(str(path))
+        self.default_proto_path = path
 
     def _extract_code_blocks(self, nb_path):
         """自动提取特定标记的代码块"""
@@ -47,7 +62,7 @@ class NotebookArchiver:
 
     def _generate_proto_file(self, notebook_name, proto_blocks):
         """生成proto源代码文件"""
-        proto_dir = Path("src/proto")
+        proto_dir = self.default_proto_path
         proto_dir.mkdir(exist_ok=True, parents=True)
         
         base_name = notebook_name.replace('.ipynb', '')
