@@ -11,7 +11,9 @@ from watchdog.events import FileSystemEventHandler
 class NotebookArchiver:
     """基于事件触发的自动归档"""
     # 存储默认路径
-    DEFAULT_PATH_FILE = Path("default_notebook_path.txt")
+    CONFIG_DIR = Path(".config")
+    CONFIG_DIR.mkdir(exist_ok=True, parents=True)
+    DEFAULT_PATH_FILE = CONFIG_DIR / "default_notebook_path.txt"
     
     def __init__(self):
         self.default_path = self._load_default_path()
